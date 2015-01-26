@@ -958,3 +958,33 @@ class MinifierTestCase(unittest.TestCase):
         ('testObj["."] = undefined; // OK', 'testObj["."]=undefined;'),
         ]
 
+
+class MinifierReparsingTestCase(unittest.TestCase):
+    __metaclass__ = VisitorTestMeta
+
+    TEST_CASES = [
+        """
+        a + +a;
+        """,
+
+        """
+        a - -a;
+        """,
+
+        """
+        a - +a;
+        """,
+
+        """
+        a + ++a;
+        """,
+
+        """
+        a - --a;
+        """
+    ]
+
+    def case(self, case):
+        parsed = Parser().parse(case)
+        minified = Parser().parse(minify(case))
+        self.assertEqual(parsed, minified)
